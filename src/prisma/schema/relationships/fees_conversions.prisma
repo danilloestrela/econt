@@ -1,0 +1,10 @@
+model FeesConversions {
+    id             Int         @id @default(autoincrement())
+    fees_id        Int
+    conversions_id Int
+    fees           Fees        @relation(fields: [fees_id], references: [id], onDelete: Cascade)
+    conversions    Conversions @relation(fields: [conversions_id], references: [id], onDelete: Cascade)
+
+    @@index([fees_id, conversions_id])
+    @@map("fees_conversions")
+}

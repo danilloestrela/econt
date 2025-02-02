@@ -1,0 +1,21 @@
+model Remunerations {
+    id                     Int                      @id @default(autoincrement())
+    amount_sugested        String
+    netAmount_sugested     String
+    amount_paid            String
+    netAmount_paid         String
+    date                   DateTime
+    description            String?
+    currency               Currencies
+    company_id             Int
+    transaction_id         Int?
+    created_at             DateTime                 @default(now())
+    updated_at             DateTime                 @updatedAt
+    transaction            Transactions?            @relation(fields: [transaction_id], references: [id])
+    company                Companies                @relation(fields: [company_id], references: [id])
+    feesRemunerations      FeesRemunerations[]
+    taxesRemunerations     TaxesRemunerations[]
+    remunerationsSummaries RemunerationsSummaries[]
+
+    @@map("remunerations")
+}

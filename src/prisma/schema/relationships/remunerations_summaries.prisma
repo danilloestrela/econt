@@ -1,0 +1,10 @@
+model RemunerationsSummaries {
+    id              Int           @id @default(autoincrement())
+    remunerationsId Int
+    summaryId       Int
+    remunerations   Remunerations @relation(fields: [remunerationsId], references: [id], onDelete: Cascade)
+    summary         Summaries     @relation(fields: [summaryId], references: [id], onDelete: Cascade)
+
+    @@unique([remunerationsId, summaryId])
+    @@map("remunerations_summaries")
+}

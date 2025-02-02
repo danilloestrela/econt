@@ -1,0 +1,20 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["prismaSchemaFolder"]
+}
+
+// ATTENTION
+// ALL MONETARY VALUES MUST BE STORED IN 1/10^7 (0.0000001)
+// THIS IS BECAUSE OF THE PRECISION OF THE CURRENCY VALUES
+// AND TO AVOID ROUNDING ERRORS

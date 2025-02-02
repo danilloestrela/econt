@@ -1,0 +1,6 @@
+enum Roles {
+    admin
+    accountant
+    user
+    company_employee
+}

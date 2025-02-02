@@ -1,0 +1,27 @@
+model Platforms {
+    id          Int           @id @default(autoincrement())
+    name        String
+    created_at  DateTime      @default(now())
+    updated_at  DateTime      @updatedAt
+    Conversions Conversions[]
+
+    @@map("platforms")
+}
+
+model Conversions {
+    id                      Int               @id @default(autoincrement())
+    from_amount             String
+    to_amount               String
+    from_currency           Currencies
+    to_currency             Currencies
+    market_currency_value   String
+    platform_currency_value String
+    platform_id             Int
+    platform                Platforms         @relation(fields: [platform_id], references: [id])
+    created_at              DateTime          @default(now())
+    updated_at              DateTime          @updatedAt
+    feesConversions         FeesConversions[]
+    revenues                Revenues[]
+
+    @@map("conversions")
+}

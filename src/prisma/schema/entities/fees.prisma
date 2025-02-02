@@ -1,0 +1,21 @@
+model Fees {
+    id                Int                 @id @default(autoincrement())
+    amount            String
+    amount_percentage String?
+    description       String?
+    fee_type          FeeTypes
+    created_at        DateTime            @default(now())
+    updated_at        DateTime            @updatedAt
+    feesRemunerations FeesRemunerations[]
+    feesSummaries     FeesSummaries[]
+    feesConversions   FeesConversions[]
+
+    @@map("fees")
+}
+
+enum FeeTypes {
+    convertion_from_amount_fee
+    convertion_to_amount_fee
+    platform_fixed_fee
+    other_fee
+}

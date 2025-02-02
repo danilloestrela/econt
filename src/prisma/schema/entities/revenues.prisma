@@ -1,0 +1,32 @@
+model Sources {
+  id         Int        @id @default(autoincrement())
+  name       String
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
+  revenues   Revenues[]
+
+  @@map("sources")
+}
+
+model Revenues {
+  id                 String       @id @default(uuid())
+  total_amount       String // service calc
+  total_fee_amount   String // service calc
+  total_taxes_amount String // service calc
+  description        String? // request
+  received_date      DateTime // request
+  source_id          Int // request
+  company_id         Int // request
+  conversion_id      Int? // request
+  transaction_id     Int // service add
+  summary_id         Int? // service add
+  created_at         DateTime     @default(now())
+  updated_at         DateTime     @updatedAt
+  transaction        Transactions @relation(fields: [transaction_id], references: [id])
+  sources            Sources      @relation(fields: [source_id], references: [id])
+  company            Companies    @relation(fields: [company_id], references: [id])
+  conversion         Conversions? @relation(fields: [conversion_id], references: [id])
+  summary            Summaries?   @relation(fields: [summary_id], references: [id])
+
+  @@map("revenues")
+}

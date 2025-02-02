@@ -1,0 +1,10 @@
+model CompaniesUsers {
+    id        Int       @id @default(autoincrement())
+    userId    String
+    companyId Int
+    user      Users     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    company   Companies @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+    @@unique([userId, companyId])
+    @@map("companies_users")
+}

@@ -1,0 +1,10 @@
+model FeesSummaries {
+    id        Int       @id @default(autoincrement())
+    feeId     Int
+    summaryId Int
+    fee       Fees      @relation(fields: [feeId], references: [id], onDelete: Cascade)
+    summary   Summaries @relation(fields: [summaryId], references: [id], onDelete: Cascade)
+
+    @@unique([feeId, summaryId])
+    @@map("fees_summaries")
+}

@@ -1,0 +1,27 @@
+model Users {
+    id             String           @id @default(uuid())
+    email          String           @unique
+    password       String?
+    google_id      String?          @unique
+    name           String?
+    role           Roles            @default(user)
+    created_at     DateTime         @default(now())
+    updated_at     DateTime         @updatedAt
+    ApiKeys        ApiKey[]
+    Sessions       Sessions[]
+    CompaniesUsers CompaniesUsers[]
+    Transactions   Transactions[]
+
+    @@map("users")
+}
+
+model Sessions {
+    id           String   @id @default(cuid())
+    sessionToken String   @unique
+    user_id      String
+    expires      DateTime
+    user         Users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+    @@index([user_id])
+    @@map("sessions")
+}

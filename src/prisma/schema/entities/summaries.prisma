@@ -1,0 +1,27 @@
+model Summaries {
+    id                        Int                      @id @default(autoincrement())
+    total_remuneration        String?
+    total_profit              String?
+    total_revenues            String?
+    total_fees                String?
+    total_taxes               String?
+    total_debts               String?
+    total_debts_percentage    String? // total_debts / total_revenues
+    remunaration_withdraw     String?
+    profit_withdraw_sugestion String?
+    profit_withdrawed         String?
+    total_withdrawed          String?
+    remaining_amount          String?
+    remaining_amount_total    String?
+    summary_date              DateTime
+    company_id                Int
+    created_at                DateTime                 @default(now())
+    updated_at                DateTime                 @updatedAt
+    company                   Companies                @relation(fields: [company_id], references: [id])
+    remunerationsSummaries    RemunerationsSummaries[]
+    taxesSummaries            TaxesSummaries[]
+    feesSummaries             FeesSummaries[]
+    Revenues                  Revenues[]
+
+    @@map("summaries")
+}

@@ -1,0 +1,6 @@
+enum TributationTypes {
+    simples_nacional
+    lucro_presumido
+    lucro_real
+    lucro_arbitrado
+}

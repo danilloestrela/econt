@@ -1,0 +1,14 @@
+enum TransactionTypes {
+    withdraw
+    payment
+    saving
+    revenue
+}
+
+enum TransactionAgents {
+    company
+    external_platform
+    external
+    business_associate
+    employee
+}

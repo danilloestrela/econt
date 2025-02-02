@@ -1,0 +1,11 @@
+model ApiKey {
+    id                 String   @id @default(uuid())
+    key                String   @unique
+    name               String
+    created_by_user_id String
+    user               Users    @relation(fields: [created_by_user_id], references: [id])
+    created_at         DateTime @default(now())
+    updated_at         DateTime @updatedAt
+
+    @@map("api_keys")
+}

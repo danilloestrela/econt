@@ -1,0 +1,10 @@
+model TaxesSummaries {
+    id        Int       @id @default(autoincrement())
+    taxId     Int
+    summaryId Int
+    tax       Taxes     @relation(fields: [taxId], references: [id], onDelete: Cascade)
+    summary   Summaries @relation(fields: [summaryId], references: [id], onDelete: Cascade)
+
+    @@unique([taxId, summaryId])
+    @@map("taxes_summaries")
+}

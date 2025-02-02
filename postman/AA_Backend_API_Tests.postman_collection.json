@@ -1,0 +1,283 @@
+{
+  "info": {
+    "_postman_id": "unique-id-here",
+    "name": "AA Backend API Tests",
+    "description": "A collection of tests for the AutoArticle Backend API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"test@example.com\",\n    \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"test@example.com\",\n    \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Google Login",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/google",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "google"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Articles",
+      "item": [
+        {
+          "name": "Fetch Latest Articles",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/articles/latest?sites[]=https://lostinanime.com/&sites[]=https://www.animenewsnetwork.com/news/&sites[]=https://myanimelist.net/news",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "articles",
+                "latest"
+              ],
+              "query": [
+                {
+                  "key": "sites[]",
+                  "value": "https://lostinanime.com/"
+                },
+                {
+                  "key": "sites[]",
+                  "value": "https://www.animenewsnetwork.com/news/"
+                },
+                {
+                  "key": "sites[]",
+                  "value": "https://myanimelist.net/news"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Article Content",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/articles/content?url=https://example.com/article",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "articles",
+                "content"
+              ],
+              "query": [
+                {
+                  "key": "url",
+                  "value": "https://example.com/article"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Rewrite Article",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Original Article Title\",\n    \"text\": \"Original article content...\",\n    \"source\": \"https://example.com/article\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/articles/rewrite",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "articles",
+                "rewrite"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Save Article",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Saved Article Title\",\n    \"content\": \"Saved article content...\",\n    \"source\": \"https://example.com/article\",\n    \"originalUrl\": \"https://example.com/article\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/articles",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "articles"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Paginated Articles",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/articles?page=1&pageSize=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "articles"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "your_auth_token_here",
+      "type": "string"
+    }
+  ]
+}

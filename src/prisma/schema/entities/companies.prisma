@@ -1,0 +1,23 @@
+model Companies {
+    id                   Int              @id @default(autoincrement())
+    legal_name           String
+    brand_name           String
+    company_legal_number String
+    address              String?
+    address_number       String?
+    complement           String?
+    neighborhood         String?
+    city                 String?
+    state                String?
+    zip_code             String?
+    country              String?
+    tributation_type     TributationTypes
+    created_at           DateTime         @default(now())
+    updated_at           DateTime         @updatedAt
+    CompaniesUsers       CompaniesUsers[]
+    Revenues             Revenues[]
+    Summaries            Summaries[]
+    Remunerations        Remunerations[]
+
+    @@map("companies")
+}

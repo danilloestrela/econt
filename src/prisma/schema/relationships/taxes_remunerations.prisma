@@ -1,0 +1,10 @@
+model TaxesRemunerations {
+    id              Int           @id @default(autoincrement())
+    taxId           Int
+    remunerationsId Int
+    tax             Taxes         @relation(fields: [taxId], references: [id], onDelete: Cascade)
+    remunerations   Remunerations @relation(fields: [remunerationsId], references: [id], onDelete: Cascade)
+
+    @@unique([taxId, remunerationsId])
+    @@map("taxes_remunerations")
+}

@@ -1,0 +1,17 @@
+model Transactions {
+    id               Int               @id @default(autoincrement())
+    transaction_type TransactionTypes
+    description      String
+    from_agent       TransactionAgents
+    to_agent         TransactionAgents
+    user_id          String
+    date             DateTime
+    created_at       DateTime          @default(now())
+    updated_at       DateTime          @updatedAt
+    users            Users             @relation(fields: [user_id], references: [id])
+    remunerations    Remunerations[]
+    revenues         Revenues[]
+
+    @@index([user_id])
+    @@map("transactions")
+}
