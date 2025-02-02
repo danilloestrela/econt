@@ -18,4 +18,10 @@ export class PrismaFeesRepository implements FeesRepository {
     async create(data: Prisma.FeesCreateInput): Promise<Fees> {
         return await prisma.fees.create({ data });
     }
+    async createMany(data: Prisma.FeesCreateManyInput[]): Promise<Prisma.BatchPayload> {
+        return await prisma.fees.createMany({ data });
+    }
+    async createManyAndReturn(data: Prisma.FeesCreateManyInput[]): Promise<Fees[]> {
+        return await prisma.fees.createManyAndReturn({ data: data });
+    }
 }

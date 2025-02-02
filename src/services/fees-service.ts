@@ -18,4 +18,7 @@ export class FeesService {
     async delete(id: number) {
         return await this.feesRepository.delete(id)
     }
+    async createManyAndReturn(data: Prisma.FeesCreateManyInput[]): Promise<Fees[]> {
+        return await this.feesRepository.createManyAndReturn(data)
+    }
 }

@@ -6,4 +6,6 @@ export interface FeesRepository {
     listByPage(page: number, perPage: number): Promise<Fees[]>;
     update(id: number, data: Prisma.FeesUpdateInput): Promise<Fees>;
     delete(id: number): Promise<Fees>;
+    createMany(data: Prisma.FeesCreateManyInput[]): Promise<Prisma.BatchPayload>;
+    createManyAndReturn(data: Prisma.FeesCreateManyInput[]): Promise<Fees[]>;
 }

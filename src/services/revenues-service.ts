@@ -20,11 +20,9 @@ interface CreateRevenueRequest {
     periodId: number;
     fees?: Array<{
       amount: number;
+      amount_percentage?: number;
       description: string;
-      type: {
-        name: string;
-        description: string;
-      };
+      fee_type: FeeTypes;
     }>;
     userId: string;
     sourceId: number;
@@ -36,26 +34,21 @@ export class RevenuesService {
 
     async newRevenue(data: CreateRevenueRequest) {
         const currenciesSlugs = Object.values(Currencies)
+        const transactionsService = makeTransactionsService()
+        const usersService = makeUsersService()
+        const sourcesService = makeSourcesService()
+        const platformsService = makePlatformsService()
+        const summarieService = makeSummariesService()
+        const feesService = makeFeesService()
 
 
         if (!data.fromCurrency || !data.toCurrency || !currenciesSlugs.includes(data.fromCurrency) || !currenciesSlugs.includes(data.toCurrency)) {
             throw new NotFoundError({what: 'Currency'})
         }
 
-        const usersService = makeUsersService()
         await usersService.userExists(data.userId)
 
         const fromAmount = convertNumberToDecimalPrecision(data.fromAmount);
-        const platformCurrencyValue = convertNumberToDecimalPrecision(data.platformCurrencyValue);
-        const marketCurrencyValue = convertNumberToDecimalPrecision(data.marketCurrencyValue);
-        const toAmount = multiplyScaled(fromAmount, platformCurrencyValue);
-
-        // 2. Calcular taxa de conversão (diferença entre mercado e plataforma)
-        const hundredPercentage = percentageToDecimalPrecision(100);
-        const conversionFeePercentage = subtractScaled(hundredPercentage, divideScaled(platformCurrencyValue, marketCurrencyValue))
-
-        // 3. Calcular valor pago pela conversão na plataforma
-        const conversionFeeAmount = multiplyScaled(fromAmount, conversionFeePercentage);
 
         let source: any = null;
         let platform: any = null;
@@ -63,22 +56,20 @@ export class RevenuesService {
         let conversion: any = null;
         let transaction: any = null;
         let fee: any = null;
+        let fees: any = null;
         let revenue: any = null;
 
         try {
 
             // Check if source exists
-            const sourcesService = makeSourcesService()
             source = await sourcesService.hasSource(data.sourceId)
             if (!source) throw new NotFoundError({what: 'Source'})
 
             // Check if platform exists
-            const platformsService = makePlatformsService()
             platform = await platformsService.hasPlatform(data.platformId)
             if (!platform) throw new NotFoundError({what: 'Platform'})
 
             // Check if summary exists
-            const summarieService = makeSummariesService()
             summary = await summarieService.hasSummary({
                 companyId: data.companyId,
                 periodId: data.periodId,
@@ -93,28 +84,71 @@ export class RevenuesService {
                 summary.wasCreated = true;
             }
 
-
+            if(data.fromCurrency !== data.toCurrency) {
+                // 2. Calcular taxa de conversão (diferença entre mercado e plataforma)
+                const platformCurrencyValue = convertNumberToDecimalPrecision(data.platformCurrencyValue);
+                const marketCurrencyValue = convertNumberToDecimalPrecision(data.marketCurrencyValue);
+                const toAmount = multiplyScaled(fromAmount, platformCurrencyValue);
+                const hundredPercentage = percentageToDecimalPrecision(100);
+                const conversionFeePercentage = subtractScaled(hundredPercentage, divideScaled(platformCurrencyValue, marketCurrencyValue))
+    
+                // 3. Calcular valor pago pela conversão na plataforma
+                const conversionFeeAmount = multiplyScaled(fromAmount, conversionFeePercentage);
             // Create conversion
-            const conversionService = makeConversionsService()
-            const conversionData = {
-                from_amount: fromAmount.toString(),
-                to_amount: toAmount.toString(),
-                from_currency: data.fromCurrency,
-                to_currency: data.toCurrency,
-                market_currency_value: marketCurrencyValue.toString(),
-                platform_currency_value: platformCurrencyValue.toString(),
-                platform: {
-                    connect: {
-                        id: data.platformId,
+                const conversionService = makeConversionsService()
+                const conversionData = {
+                    from_amount: fromAmount.toString(),
+                    to_amount: toAmount.toString(),
+                    from_currency: data.fromCurrency,
+                    to_currency: data.toCurrency,
+                    market_currency_value: marketCurrencyValue.toString(),
+                    platform_currency_value: platformCurrencyValue.toString(),
+                    platform: {
+                        connect: {
+                            id: data.platformId,
+                        }
                     }
                 }
+                conversion = await conversionService.create(conversionData)
+                conversion.wasCreated = true;
+                
+                // Create transaction (who did, where it came from)
+                const transactionData = {
+                    transaction_type: TransactionTypes.revenue,
+                    from_agent: TransactionAgents.external_platform,
+                    to_agent: TransactionAgents.company,
+                    description: `Revenue conversion from ${data.fromCurrency} to ${data.toCurrency}`,
+                    date: anyToUtc(new Date()),
+                    users: {
+                        connect: {
+                            id: data.userId,
+                        }
+                    }
+                }
+                transaction = await transactionsService.create(transactionData)
+                transaction.wasCreated = true;
+                // Create Fee referent to conversion value
+                const feeData = {
+                    amount: conversionFeeAmount.toString(),
+                    amount_percentage: conversionFeePercentage.toString(),
+                    description: `Conversion fee from ${data.fromCurrency} to ${data.toCurrency}`,
+                    fee_type: FeeTypes.convertion_from_amount_fee,
+                    feesConversions: {
+                        create: {
+                            conversions: {
+                                connect: {
+                                    id: conversion.id,
+                                }
+                            }
+                        }
+                    }
+                }
+    
+                fee = await feesService.new(feeData)
+                fee.wasCreated = true;
             }
 
-            conversion = await conversionService.create(conversionData)
-            conversion.wasCreated = true;
-            // Create transaction (who did, where it came from)
-            const transactionsService = makeTransactionsService()
-            const transactionData = {
+            transaction = await transactionsService.create({
                 transaction_type: TransactionTypes.revenue,
                 from_agent: TransactionAgents.external_platform,
                 to_agent: TransactionAgents.company,
@@ -125,32 +159,23 @@ export class RevenuesService {
                         id: data.userId,
                     }
                 }
-            }
-            transaction = await transactionsService.create(transactionData)
-            transaction.wasCreated = true;
-            // Create Fee referent to conversion value
-            const feesService = makeFeesService()
-            const feeData = {
-                amount: conversionFeeAmount.toString(),
-                amount_percentage: conversionFeePercentage.toString(),
-                description: `Conversion fee from ${data.fromCurrency} to ${data.toCurrency}`,
-                fee_type: FeeTypes.convertion_from_amount_fee,
-                feesConversions: {
-                    create: {
-                        conversions: {
-                            connect: {
-                                id: conversion.id,
-                            }
-                        }
-                    }
-                }
-            }
+            })
 
-            fee = await feesService.new(feeData)
-            fee.wasCreated = true;
+            if (Array.isArray(data.fees) && data.fees.length > 0) {
+                const feesData = data.fees.map(fee => ({
+                    amount: convertNumberToDecimalPrecision(fee.amount).toString(),
+                    amount_percentage: fee?.amount_percentage ? fee.amount_percentage.toString() : '0',
+                    description: fee.description,
+                    fee_type: fee.fee_type,
+                    date: anyToUtc(new Date()),
+                }));
+
+                fees.data = await feesService.createManyAndReturn(feesData);
+                fees.wasCreated = true
+            }
 
             // Create revenue
-            const revenueData = {
+            let revenueData: Prisma.RevenuesCreateInput = {
                 company: {
                     connect: {
                         id: data.companyId,
@@ -161,13 +186,21 @@ export class RevenuesService {
                         id: data.sourceId,
                     },
                 },
-                transaction: {
-                    connect: {
-                        id: transaction.id,
-                    }
-                },
                 total_amount: fromAmount.toString(),
-                total_fee_amount: conversionFeeAmount.toString(),
+                total_fee_amount: '0',
+                total_taxes_amount: '0',
+                received_date: anyToUtc(new Date()),
+            }
+
+            if(transaction.wasCreated) {
+                revenueData = {
+                    ...revenueData,
+                    transaction: {
+                        connect: {
+                            id: transaction.id,
+                        }
+                    }
+                }
             }
 
             revenue = await this.createRevenue(revenueData);
