@@ -79,6 +79,11 @@ export class SummariesService {
         return summary;
     }
 
+    async findSummaryByCompanyIdAndSummaryDate(data: HasSummaryData) {
+        const summary = await this.summariesRepository.findByCompanyIdAndDate(data.companyId, data.summaryDate);
+        return summary;
+    }
+
     async delete(id: number) {
         const summary = await this.summariesRepository.delete(id);
         return summary;

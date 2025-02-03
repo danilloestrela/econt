@@ -90,6 +90,12 @@ export class RevenuesService {
                     summaryDate: data.receivedDate,
                 });
                 summary.wasCreated = true;
+            } else {
+                summary = await summariesService.findSummaryByCompanyIdAndSummaryDate({
+                    companyId: data.companyId,
+                    summaryDate: data.receivedDate,
+                })
+                summary.wasCreated = true;
             }
 
             // Check/create conversion and fees for currency conversion (if some)
@@ -167,9 +173,10 @@ export class RevenuesService {
             // Update summary
             summary = await summariesService.updateRevenueSummary({
                 summaryId: summary.id,
-                revenue_amount: revenue.total_amount,
+                revenue_amount: addScaled(convertToDecimalWithNoPrecisionAdjust(summary.total_revenues), convertToDecimalWithNoPrecisionAdjust(revenue.total_amount)).toString(),
             })
             summary.wasUpdated = true;
+
             const logData = {
                 revenue: {
                     total_amount: convertToDecimalNumber(revenue.total_amount),
@@ -191,14 +198,18 @@ export class RevenuesService {
                         market_currency_value: convertToDecimalNumber(conversion.market_currency_value),
                         platform_currency_value: convertToDecimalNumber(conversion.platform_currency_value),
                     },
-                    fees: fees.data.map((fee: any) => ({
+                    fees: fees?.data.map((fee: any) => ({
                         id: fee.id,
                         amount: convertToDecimalNumber(fee.amount),
                         amount_percentage: convertToDecimalNumber(fee.amount_percentage),
                         description: fee.description,
                         fee_type: fee.fee_type,
                         currency: fee.currency,
-                    }))
+                    })) || [],
+
+                    summary: {
+                        ...summary
+                    }
                 }
             }
 
@@ -224,10 +235,6 @@ export class RevenuesService {
 
             if (conversion?.wasCreated) {
                 await conversionsService.delete(conversion.id);
-            }
-
-            if (summary?.wasCreated) {
-                await summariesService.delete(summary.id);
             }
 
             throw error; // Re-throw the error after cleanup
