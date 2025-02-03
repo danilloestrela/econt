@@ -3,6 +3,7 @@ model Taxes {
     amount             String
     name               String
     description        String
+    currency           Currencies
     taxesRemunerations TaxesRemunerations[]
     taxesSummaries     TaxesSummaries[]
     created_at         DateTime             @default(now())

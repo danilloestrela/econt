@@ -1,7 +1,7 @@
 import { makeRevenuesService } from "@/services/factories/make-revenues-service"
 import { Anexo3Year, makeAnexo3Service } from "@/services/factories/taxes-factories/make-anexo3-service"
 import { IRPFYear, makeIRPFService } from "@/services/factories/taxes-factories/make-irpf-service"
-import { Currencies, Months } from "@prisma/client"
+import { Currencies, FeeTypes } from "@prisma/client"
 import { FastifyReply, FastifyRequest } from "fastify"
 import { z } from "zod"
 
@@ -14,20 +14,15 @@ export async function createRevenue(request: FastifyRequest, reply: FastifyReply
     toCurrency: z.nativeEnum(Currencies).default(Currencies.brl),
     marketCurrencyValue: z.number(),
     platformCurrencyValue: z.number(),
-    period: z.object({
-      month_period: z.nativeEnum(Months),
-      year_period: z.number(),
-      description: z.string().optional(),
-    }),
+    receivedDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format, expected YYYY-MM-DD"),
     sourceId: z.number(),
     fees: z.array(
         z.object({
           amount: z.number(),
+          amount_percentage: z.number().optional(),
           description: z.string(),
-          type: z.object({
-            name: z.string(),
-            description: z.string(),
-          }),
+          fee_type: z.nativeEnum(FeeTypes),
+          currency: z.nativeEnum(Currencies),
         })
       ).optional(),
   })
@@ -46,7 +41,7 @@ export async function createRevenue(request: FastifyRequest, reply: FastifyReply
     toCurrency: revenue.toCurrency,
     marketCurrencyValue: revenue.marketCurrencyValue,
     platformCurrencyValue: revenue.platformCurrencyValue,
-    period: revenue.period,
+    receivedDate: revenue.receivedDate,
     fees: revenue.fees,
     userId: request.user.sub,
     platformId: revenue.platformId,

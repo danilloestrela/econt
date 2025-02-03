@@ -4,9 +4,6 @@ import { addScaled, convertNumberToDecimalPrecision, convertToDecimalNumber } fr
 import { Prisma, Revenues } from "@prisma/client";
 
 export class PrismaRevenuesRepository implements RevenuesRepository {
-  getCurrentMonthRevenueSum(companyId: number, month: string): Promise<{ totalAmountSum: string; months: number; revenues: Revenues[] }> {
-    throw new Error("Method not implemented.")
-  }
   async create(data: Prisma.RevenuesCreateInput) {
     return await prisma.revenues.create({ data })
   }

@@ -3,7 +3,7 @@ import { NotCreatedError } from "./errors/common-errors";
 
 interface NewSummaryEmptyData {
     companyId: number;
-    periodId: number;
+    summaryDate: string;
 }
 
 interface HasSummaryData extends NewSummaryEmptyData {}
@@ -18,7 +18,9 @@ export class SummariesService {
 
     async newEmptySummary(data: NewSummaryEmptyData) {
         // If a summary is been created, we need to update a remuneration too
-        // take this from remunerations service (create a new remuneration and return the result here to be added to the summary)
+        // take this from remunerations service
+        // (create a new remuneration and return the result here to be added to the summary)
+        const summaryDate = new Date(data.summaryDate);
 
         const summary = await this.summariesRepository.create({
             company: {
@@ -26,11 +28,7 @@ export class SummariesService {
                     id: data.companyId
                 }
             },
-            period: {
-                connect: {
-                    id: data.periodId
-                }
-            },
+            summary_date: summaryDate,
             total_revenues: '0',
             total_remuneration: '0',
             total_profit: '0',
@@ -52,7 +50,7 @@ export class SummariesService {
     }
 
     async hasSummary(data: HasSummaryData) {
-        const summary = await this.summariesRepository.findByPeriodAndCompanyIds(data.periodId, data.companyId);
+        const summary = await this.summariesRepository.findByCompanyIdAndDate(data.companyId, data.summaryDate);
         return summary !== null;
     }
 

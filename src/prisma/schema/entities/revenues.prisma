@@ -13,6 +13,7 @@ model Revenues {
   total_amount       String // service calc
   total_fee_amount   String // service calc
   total_taxes_amount String // service calc
+  currency           Currencies // service calc
   description        String? // request
   received_date      DateTime // request
   source_id          Int // request

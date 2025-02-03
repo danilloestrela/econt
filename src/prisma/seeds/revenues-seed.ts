@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { convertNumberToDecimalPrecision } from "@/utils/decimalUtils";
-import { Prisma, TransactionAgents, Transactions, TransactionTypes } from "@prisma/client";
+import { Currencies, Prisma, TransactionAgents, Transactions, TransactionTypes } from "@prisma/client";
 
 export async function execute() {
 
@@ -186,6 +186,7 @@ export async function execute() {
       total_taxes_amount: convertNumberToDecimalPrecision(688.52).toString(),
       received_date: new Date('2024-01-01').toISOString(),
       description: 'revenue - janeiro/2024',
+      currency: Currencies.brl,
       sources: {
         connect: {
           id: 5
@@ -204,6 +205,7 @@ export async function execute() {
       total_taxes_amount: convertNumberToDecimalPrecision(1028.82).toString(),
       received_date: new Date('2024-02-01').toISOString(),
       description: 'revenue - fevereiro/2024',
+      currency: Currencies.brl,
       sources: {
         connect: {
           id: 5
@@ -222,6 +224,7 @@ export async function execute() {
       total_taxes_amount: convertNumberToDecimalPrecision(975.48).toString(),
       received_date: new Date('2024-03-01').toISOString(),
       description: 'revenue - março/2024',
+      currency: Currencies.brl,
       sources: {
         connect: {
           id: 5
@@ -240,6 +243,7 @@ export async function execute() {
       total_taxes_amount: convertNumberToDecimalPrecision(999.93).toString(),
       received_date: new Date('2024-04-01').toISOString(),
       description: 'revenue - abril/2024',
+      currency: Currencies.brl,
       sources: {
         connect: {
           id: 5
@@ -258,6 +262,7 @@ export async function execute() {
       total_taxes_amount: convertNumberToDecimalPrecision(1295.10).toString(),
       received_date: new Date('2024-05-01').toISOString(),
       description: 'revenue - maio/2024',
+      currency: Currencies.brl,
       sources: {
         connect: {
           id: 5
@@ -276,6 +281,7 @@ export async function execute() {
       total_taxes_amount: convertNumberToDecimalPrecision(1452.55).toString(),
       received_date: new Date('2024-06-01').toISOString(),
       description: 'revenue - junho/2024',
+      currency: Currencies.brl,
       sources: {
         connect: {
           id: 5
@@ -294,6 +300,7 @@ export async function execute() {
       total_taxes_amount: convertNumberToDecimalPrecision(353.68).toString(),
       received_date: new Date('2024-07-01').toISOString(),
       description: 'revenue - julho/2024',
+      currency: Currencies.brl,
       sources: {
         connect: {
           id: 5
@@ -312,6 +319,7 @@ export async function execute() {
       total_taxes_amount: convertNumberToDecimalPrecision(1763.85).toString(),
       received_date: new Date('2024-08-01').toISOString(),
       description: 'revenue - agosto/2024',
+      currency: Currencies.brl,
       sources: {
         connect: {
           id: 5
@@ -330,6 +338,7 @@ export async function execute() {
       total_taxes_amount: convertNumberToDecimalPrecision(2249.47).toString(),
       received_date: new Date('2024-09-01').toISOString(),
       description: 'revenue - setembro/2024',
+      currency: Currencies.brl,
       sources: {
         connect: {
           id: 5
@@ -348,6 +357,7 @@ export async function execute() {
       total_taxes_amount: convertNumberToDecimalPrecision(2867.70).toString(),
       received_date: new Date('2024-10-01').toISOString(),
       description: 'revenue - outubro/2024 - Esta guia DAS está sem fator R, então está no anexo V. Devido ao ajuste que fizemos para enquadramento retroativo esta guia gerou saldo positivo para sua empresa compensar nos impostos futuros de DAS.',
+      currency: Currencies.brl,
       sources: {
         connect: {
           id: 5
@@ -366,6 +376,7 @@ export async function execute() {
       total_taxes_amount: convertNumberToDecimalPrecision(0).toString(),
       received_date: new Date('2024-11-01').toISOString(),
       description: 'revenue - novembro/2024 - Esta guia DAS está sem fator R, então está no anexo V. Devido ao ajuste que fizemos para enquadramento retroativo esta guia gerou saldo positivo para sua empresa compensar nos impostos futuros de DAS.',
+      currency: Currencies.brl,
       sources: {
         connect: {
           id: 5
@@ -384,6 +395,7 @@ export async function execute() {
       total_taxes_amount: convertNumberToDecimalPrecision(1906.98).toString(),
       received_date: new Date('2024-12-01').toISOString(),
       description: 'revenue - dezembro/2024 - Aqui não houve desconto de INSS, pois já recolhe no vínculo CLT no teto. / No DAS houve uma compensação de impostos que reduziu o valor da guia paga, porém a guia calculada era o valor informado na coluna.',
+      currency: Currencies.brl,
       sources: {
         connect: {
           id: 5

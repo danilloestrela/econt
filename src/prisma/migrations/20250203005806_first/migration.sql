@@ -17,7 +17,7 @@ CREATE TYPE "TransactionAgents" AS ENUM ('company', 'external_platform', 'extern
 CREATE TYPE "TributationTypes" AS ENUM ('simples_nacional', 'lucro_presumido', 'lucro_real', 'lucro_arbitrado');
 
 -- CreateEnum
-CREATE TYPE "FeeTypes" AS ENUM ('convertion_from_amount_fee', 'convertion_to_amount_fee', 'platform_fixed_fee', 'other_fee');
+CREATE TYPE "FeeTypes" AS ENUM ('convertion_from_amount_fee', 'convertion_to_amount_fee', 'platform_deposit_fee', 'platform_withdrawal_fee', 'other_fee');
 
 -- CreateTable
 CREATE TABLE "api_keys" (
@@ -84,6 +84,7 @@ CREATE TABLE "fees" (
     "amount" TEXT NOT NULL,
     "amount_percentage" TEXT,
     "description" TEXT,
+    "currency" "Currencies" NOT NULL,
     "fee_type" "FeeTypes" NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
@@ -125,6 +126,7 @@ CREATE TABLE "revenues" (
     "total_amount" TEXT NOT NULL,
     "total_fee_amount" TEXT NOT NULL,
     "total_taxes_amount" TEXT NOT NULL,
+    "currency" "Currencies" NOT NULL,
     "description" TEXT,
     "received_date" TIMESTAMP(3) NOT NULL,
     "source_id" INTEGER NOT NULL,
@@ -168,6 +170,7 @@ CREATE TABLE "taxes" (
     "amount" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
+    "currency" "Currencies" NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 

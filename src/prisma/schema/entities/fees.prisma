@@ -3,6 +3,7 @@ model Fees {
     amount            String
     amount_percentage String?
     description       String?
+    currency          Currencies
     fee_type          FeeTypes
     created_at        DateTime            @default(now())
     updated_at        DateTime            @updatedAt
@@ -16,6 +17,7 @@ model Fees {
 enum FeeTypes {
     convertion_from_amount_fee
     convertion_to_amount_fee
-    platform_fixed_fee
+    platform_deposit_fee
+    platform_withdrawal_fee
     other_fee
 }

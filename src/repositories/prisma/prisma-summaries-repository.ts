@@ -3,9 +3,22 @@ import { Prisma, Summaries } from "@prisma/client";
 import { SummariesRepository } from "../summaries-repository";
 
 export class PrismaSummariesRepository implements SummariesRepository {
-    findByPeriodAndCompanyIds(periodId: number, companyId: number): Promise<Summaries | null> {
-        throw new Error("Method not implemented.");
+    async findByCompanyIdAndDate(companyId: number, date: string): Promise<Summaries | null> {
+        const dateObj = new Date(date);
+        const startOfMonth = new Date(dateObj.getFullYear(), dateObj.getMonth(), 1);
+        const endOfMonth = new Date(dateObj.getFullYear(), dateObj.getMonth() + 1, 0);
+
+        return await prisma.summaries.findFirst({
+            where: {
+                company_id: companyId,
+                summary_date: {
+                    gte: startOfMonth,
+                    lte: endOfMonth
+                }
+            }
+        });
     }
+
     async create(data: Prisma.SummariesCreateInput): Promise<Summaries> {
         return await prisma.summaries.create({ data });
     }
