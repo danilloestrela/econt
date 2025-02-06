@@ -4,6 +4,29 @@ import { addScaled, convertNumberToDecimalPrecision, convertToDecimalNumber } fr
 import { Prisma, Revenues } from "@prisma/client";
 
 export class PrismaRevenuesRepository implements RevenuesRepository {
+  async getSumOfMonthRevenues(companyId: number, date: string): Promise<{ totalAmountSum: string, date: string, revenues: Revenues[] }> {
+    const [year, monthIndex, ] = date.split('-').map(Number); // eg: 2025-01-01
+    const startDate = new Date(year, monthIndex - 1, 1);
+    const endDate = new Date(year, monthIndex, 0);
+
+    const result = await prisma.revenues.findMany({
+        where: {
+            company_id: companyId,
+            received_date: {
+                gte: startDate,
+                lte: endDate
+            }
+        }
+    });
+
+    const sum = result.reduce((sum, revenue) =>  addScaled(sum, convertToDecimalNumber(revenue.total_amount)), convertNumberToDecimalPrecision(0));
+    return {
+        date,
+        totalAmountSum: sum.toString(),
+        revenues: result
+    }
+  }
+
   async create(data: Prisma.RevenuesCreateInput) {
     return await prisma.revenues.create({ data })
   }
@@ -21,7 +44,13 @@ export class PrismaRevenuesRepository implements RevenuesRepository {
   }
 
   async findByCompanyId(companyId: number) {
-    return await prisma.revenues.findFirst({ where: { company_id: companyId } })
+    return await prisma.revenues.findFirst({ where: { company_id: companyId }, include: {
+      company: true,
+      sources: true,
+      transaction: true,
+      conversion: true,
+      summary: true
+    } })
   }
 
   async createOrFind(data: Prisma.RevenuesCreateInput) {

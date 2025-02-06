@@ -18,6 +18,9 @@ model Companies {
     Revenues             Revenues[]
     Summaries            Summaries[]
     Remunerations        Remunerations[]
+    Employees            Employees[]
+    Taxes                Taxes[]
+    Fees                 Fees[]
 
     @@map("companies")
 }

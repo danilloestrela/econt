@@ -8,11 +8,13 @@ model Remunerations {
     description            String?
     currency               Currencies
     company_id             Int
+    employee_id            Int
     transaction_id         Int?
     created_at             DateTime                 @default(now())
     updated_at             DateTime                 @updatedAt
     transaction            Transactions?            @relation(fields: [transaction_id], references: [id])
     company                Companies                @relation(fields: [company_id], references: [id])
+    employee               Employees                @relation(fields: [employee_id], references: [id])
     feesRemunerations      FeesRemunerations[]
     taxesRemunerations     TaxesRemunerations[]
     remunerationsSummaries RemunerationsSummaries[]

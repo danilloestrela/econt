@@ -6,5 +6,6 @@ export interface RevenuesRepository {
   delete(id: string): Promise<Revenues | Error>
   findByCompanyId(companyId: number): Promise<Revenues | null>
   getSumOfRevenues(companyId: number, months: number): Promise<{ totalAmountSum: string, months: number, revenues: Revenues[] }>
+  getSumOfMonthRevenues(companyId: number, date: string): Promise<{ totalAmountSum: string, date: string, revenues: Revenues[] }>
   has12MonthsRevenues(companyId: number): Promise<boolean>
 }

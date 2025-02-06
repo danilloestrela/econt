@@ -1,7 +1,7 @@
 import { INSSType, INSSYear, makeINSSService } from '@/services/factories/taxes-factories/make-prolabore-inss';
 import { IRPFTable } from '@/services/taxes-services/interfaces/base-irpf-service-interface';
 import { BaseIRPFService } from '@/services/taxes-services/irpf/base-irpf-service';
-import { convertNumberToDecimalPrecision, convertToDecimalNumber, multiplyScaled, percentageToDecimalPrecision, subtractScaled } from '@/utils/decimalUtils';
+import { addScaled, convertNumberToDecimalPrecision, convertToDecimalNumber, multiplyScaled, percentageToDecimalPrecision, subtractScaled } from '@/utils/decimalUtils';
 import Decimal from 'decimal.js';
 
 // Classe específica para IRPF 2025
@@ -23,13 +23,21 @@ export class IRPF2025Service extends BaseIRPFService {
 
     async calculateTax(grossSalary: number, dependentsCount: number = 0) {
         const inssService = makeINSSService(INSSYear.Y2025, INSSType.PROLABORE);
+        // IRPF depends on INSS, because we calc it taking INSS out from salary
         const { salaryMinusInss, inssTaxValue, grossSalary: grossSalaryInss } = await inssService.calculateTax(grossSalary);
         const salaryMinusInssDecimal = convertNumberToDecimalPrecision(salaryMinusInss);
+        // This is the salary we calc the IRPF from, since we need t take out dependents too
         const salaryMinusDependentDeduction = this.getSalaryMinusDependentsDeduction(salaryMinusInssDecimal, dependentsCount);
+        // Now we get the aliquot from table.
         const aliquot = this.getAliquot(salaryMinusDependentDeduction);
+        // Get the table deduction
         const irpfDeduction = this.getDeduction(salaryMinusDependentDeduction);
+        // get the amount we take as tax (irpf)
         const irpfTaxValue = multiplyScaled(salaryMinusDependentDeduction, aliquot);
+        // take out deduction from irpf value
         const finalTax = subtractScaled(irpfTaxValue, irpfDeduction);
+        const sumTaxes = addScaled(convertNumberToDecimalPrecision(inssTaxValue), finalTax);
+        const netSalary = subtractScaled(grossSalaryInss, sumTaxes);
         return {
             irpfTax: convertToDecimalNumber(finalTax),
             inssTax: inssTaxValue,
@@ -38,6 +46,7 @@ export class IRPF2025Service extends BaseIRPFService {
             dependents: dependentsCount,
             salaryMinusDependentDeduction: convertToDecimalNumber(salaryMinusDependentDeduction),
             salaryMinusInss: salaryMinusInss,
+            netSalary: convertToDecimalNumber(netSalary),
             grossSalary: grossSalaryInss,
         };
     }

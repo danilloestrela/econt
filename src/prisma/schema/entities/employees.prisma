@@ -1,0 +1,17 @@
+model Employees {
+    id            Int             @id @default(autoincrement())
+    name          String
+    type          EmployeeType    @default(business_associate)
+    company_id    Int
+    createdAt     DateTime        @default(now())
+    updatedAt     DateTime        @updatedAt
+    company       Companies       @relation(fields: [company_id], references: [id])
+    Remunerations Remunerations[]
+
+    @@map("employees")
+}
+
+enum EmployeeType {
+    business_associate
+    employee
+}

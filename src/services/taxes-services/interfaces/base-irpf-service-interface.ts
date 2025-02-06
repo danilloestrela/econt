@@ -16,6 +16,7 @@ export interface IRPFResult {
     salaryMinusInss: number;
     grossSalary: number;
     dependents: number;
+    netSalary: number;
 }
 
 export interface IRPFYearService {

@@ -171,7 +171,7 @@ export class RevenuesService {
             // Pensar em uma forma universal de decidir isso. Provavelmente checar na empresa qual o tipo de tributação ela está emquadrada seja o caminho.
             // Podemos tirar essa informação do service de companies, e só então do service "taxes" retirar o cálculo de impostos.
             // Update summary
-            summary = await summariesService.updateRevenueSummary({
+            summary = await summariesService.updateSummaryFromRemuneration({
                 summaryId: summary.id,
                 revenue_amount: addScaled(convertToDecimalWithNoPrecisionAdjust(summary.total_revenues), convertToDecimalWithNoPrecisionAdjust(revenue.total_amount)).toString(),
             })
@@ -341,8 +341,8 @@ export class RevenuesService {
         return totalAmountSum;
     }
 
-    async getCurrentMonthRevenueSum(companyId: number): Promise<string> {
-        const { totalAmountSum } = await this.revenuesRepository.getSumOfRevenues(companyId, 1);
+    async getMonthRevenueSum(companyId: number, date: string): Promise<string> {
+        const { totalAmountSum } = await this.revenuesRepository.getSumOfMonthRevenues(companyId, date);
         return totalAmountSum;
     }
 }

@@ -16,3 +16,7 @@ export function isoToBrt(isoDate: string) {
 export function anyToUtc(date: Date) {
     return new TZDate(date, TIMEZONES.UTC);
 }
+
+export function toSimpleYearMonthDate(date: Date) {
+    return format(date, "yyyy-MM-dd");
+}

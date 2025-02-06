@@ -5,8 +5,10 @@ model Fees {
     description       String?
     currency          Currencies
     fee_type          FeeTypes
+    company_id        Int
     created_at        DateTime            @default(now())
     updated_at        DateTime            @updatedAt
+    company           Companies           @relation(fields: [company_id], references: [id])
     feesRemunerations FeesRemunerations[]
     feesSummaries     FeesSummaries[]
     feesConversions   FeesConversions[]

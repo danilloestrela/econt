@@ -8,4 +8,6 @@ export interface RemunerationsRepository {
     delete(id: number): Promise<Remunerations>;
     getSumOfRemunerations(companyId: number, months: number): Promise<{amountPaidSum: string, months: number, remunerations: Remunerations[]}>;
     getMonthTotalRemunerations(companyId: number, month: string): Promise<{totalAmountSum: string, month: string, remunerations: Remunerations[]}>;
+    getRemunerationByEmployeeId(employeeId: number, date: string): Promise<Remunerations | null>;
+    getRemunerationByEmployeeIdAndDate(employeeId: number, date: string): Promise<Remunerations | null>;
 }

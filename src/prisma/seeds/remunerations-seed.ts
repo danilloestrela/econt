@@ -169,6 +169,11 @@ export async function execute() {
                     id: 1
                 }
             },
+            employee: {
+                connect: {
+                    id: 1
+                }
+            }
         },
         {
             description: 'fevereiro/2024',
@@ -183,6 +188,11 @@ export async function execute() {
                     id: 1
                 }
             },
+            employee: {
+                connect: {
+                    id: 1
+                }
+            }
         },
         {
             description: 'março/2024',
@@ -197,6 +207,11 @@ export async function execute() {
                     id: 1
                 }
             },
+            employee: {
+                connect: {
+                    id: 1
+                }
+            }
         },
         {
             description: 'abril/2024',
@@ -211,6 +226,11 @@ export async function execute() {
                     id: 1
                 }
             },
+            employee: {
+                connect: {
+                    id: 1
+                }
+            }
         },
         {
             description: 'maio/2024',
@@ -225,6 +245,11 @@ export async function execute() {
                     id: 1
                 }
             },
+            employee: {
+                connect: {
+                    id: 1
+                }
+            }
         },
         {
             description: 'junho/2024',
@@ -239,6 +264,11 @@ export async function execute() {
                     id: 1
                 }
             },
+            employee: {
+                connect: {
+                    id: 1
+                }
+            }
         },
         {
             description: 'julho/2024',
@@ -253,6 +283,11 @@ export async function execute() {
                     id: 1
                 }
             },
+            employee: {
+                connect: {
+                    id: 1
+                }
+            }
         },
         {
             description: 'agosto/2024',
@@ -267,6 +302,11 @@ export async function execute() {
                     id: 1
                 }
             },
+            employee: {
+                connect: {
+                    id: 1
+                }
+            }
         },
         {
             description: 'setembro/2024',
@@ -281,6 +321,11 @@ export async function execute() {
                     id: 1
                 }
             },
+            employee: {
+                connect: {
+                    id: 1
+                }
+            }
         },
         {
             description: 'outubro/2024',
@@ -295,6 +340,11 @@ export async function execute() {
                     id: 1
                 }
             },
+            employee: {
+                connect: {
+                    id: 1
+                }
+            }
         },
         {
             description: 'novembro/2024',
@@ -309,6 +359,11 @@ export async function execute() {
                     id: 1
                 }
             },
+            employee: {
+                connect: {
+                    id: 1
+                }
+            }
         },
         {
             description: 'dezembro/2024',
@@ -323,6 +378,11 @@ export async function execute() {
                     id: 1
                 }
             },
+            employee: {
+                connect: {
+                    id: 1
+                }
+            }
         }
     ]
 

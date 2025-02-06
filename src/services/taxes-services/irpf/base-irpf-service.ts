@@ -14,6 +14,7 @@ export abstract class BaseIRPFService implements IRPFYearService {
             salaryMinusInss: 0,
             grossSalary: 0,
             dependents: 0,
+            netSalary: 0,
         };
     }
 }

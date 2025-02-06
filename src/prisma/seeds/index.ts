@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma"
 import CompaniesSeed from "./companies-seed"
+import EmployeesSeed from "./employees-seed"
 import PlatformsSeed from "./platforms-seed"
 import RemunerationsSeed from "./remunerations-seed"
 import RevenuesSeed from "./revenues-seed"
@@ -20,6 +21,7 @@ async function main() {
     await executeSeed('Sources', SourcesSeed)
     await executeSeed('Platforms', PlatformsSeed)
     await executeSeed('Companies', CompaniesSeed)
+    await executeSeed('Employees', EmployeesSeed)
     await executeSeed('Revenues', RevenuesSeed)
     await executeSeed('Remunerations', RemunerationsSeed)
   } catch (error) {
