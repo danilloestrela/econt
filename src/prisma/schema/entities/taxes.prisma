@@ -5,10 +5,10 @@ model Taxes {
     description        String
     currency           Currencies
     company_id         Int
-    taxesRemunerations TaxesRemunerations[]
-    taxesSummaries     TaxesSummaries[]
     created_at         DateTime             @default(now())
     updated_at         DateTime             @updatedAt
+    taxesRemunerations TaxesRemunerations[]
+    taxesSummaries     TaxesSummaries[]
     company            Companies            @relation(fields: [company_id], references: [id])
 
     @@map("taxes")

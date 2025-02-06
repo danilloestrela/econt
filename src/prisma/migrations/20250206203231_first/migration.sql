@@ -17,6 +17,9 @@ CREATE TYPE "TransactionAgents" AS ENUM ('company', 'external_platform', 'extern
 CREATE TYPE "TributationTypes" AS ENUM ('simples_nacional', 'lucro_presumido', 'lucro_real', 'lucro_arbitrado');
 
 -- CreateEnum
+CREATE TYPE "EmployeeType" AS ENUM ('business_associate', 'employee');
+
+-- CreateEnum
 CREATE TYPE "FeeTypes" AS ENUM ('convertion_from_amount_fee', 'convertion_to_amount_fee', 'platform_deposit_fee', 'platform_withdrawal_fee', 'other_fee');
 
 -- CreateTable
@@ -79,6 +82,18 @@ CREATE TABLE "conversions" (
 );
 
 -- CreateTable
+CREATE TABLE "employees" (
+    "id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
+    "type" "EmployeeType" NOT NULL DEFAULT 'business_associate',
+    "company_id" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "employees_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "fees" (
     "id" SERIAL NOT NULL,
     "amount" TEXT NOT NULL,
@@ -86,6 +101,7 @@ CREATE TABLE "fees" (
     "description" TEXT,
     "currency" "Currencies" NOT NULL,
     "fee_type" "FeeTypes" NOT NULL,
+    "company_id" INTEGER NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
@@ -103,6 +119,7 @@ CREATE TABLE "remunerations" (
     "description" TEXT,
     "currency" "Currencies" NOT NULL,
     "company_id" INTEGER NOT NULL,
+    "employee_id" INTEGER NOT NULL,
     "transaction_id" INTEGER,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
@@ -171,6 +188,7 @@ CREATE TABLE "taxes" (
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "currency" "Currencies" NOT NULL,
+    "company_id" INTEGER NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
@@ -325,10 +343,19 @@ ALTER TABLE "api_keys" ADD CONSTRAINT "api_keys_created_by_user_id_fkey" FOREIGN
 ALTER TABLE "conversions" ADD CONSTRAINT "conversions_platform_id_fkey" FOREIGN KEY ("platform_id") REFERENCES "platforms"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "employees" ADD CONSTRAINT "employees_company_id_fkey" FOREIGN KEY ("company_id") REFERENCES "companies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "fees" ADD CONSTRAINT "fees_company_id_fkey" FOREIGN KEY ("company_id") REFERENCES "companies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "remunerations" ADD CONSTRAINT "remunerations_transaction_id_fkey" FOREIGN KEY ("transaction_id") REFERENCES "transactions"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "remunerations" ADD CONSTRAINT "remunerations_company_id_fkey" FOREIGN KEY ("company_id") REFERENCES "companies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "remunerations" ADD CONSTRAINT "remunerations_employee_id_fkey" FOREIGN KEY ("employee_id") REFERENCES "employees"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "revenues" ADD CONSTRAINT "revenues_transaction_id_fkey" FOREIGN KEY ("transaction_id") REFERENCES "transactions"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -347,6 +374,9 @@ ALTER TABLE "revenues" ADD CONSTRAINT "revenues_summary_id_fkey" FOREIGN KEY ("s
 
 -- AddForeignKey
 ALTER TABLE "summaries" ADD CONSTRAINT "summaries_company_id_fkey" FOREIGN KEY ("company_id") REFERENCES "companies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "taxes" ADD CONSTRAINT "taxes_company_id_fkey" FOREIGN KEY ("company_id") REFERENCES "companies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "transactions" ADD CONSTRAINT "transactions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -6,5 +6,5 @@ export interface TaxesRepository {
     findByName(name: string): Promise<Taxes | null>
     list(): Promise<Taxes[]>
     update(id: number, data: Prisma.TaxesUpdateInput): Promise<Taxes>
-    delete(id: number): Promise<void>
+    delete(id: number): Promise<Taxes | null>
 }

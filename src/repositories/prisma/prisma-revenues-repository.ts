@@ -1,13 +1,12 @@
 import { prisma } from "@/lib/prisma";
 import { RevenuesRepository } from "@/repositories/revenues-respository";
+import { extractYearMonthFromDate, extractYearMonthFromStringDate, getMonthFromMonthsAgo } from "@/utils/dateUtils";
 import { addScaled, convertNumberToDecimalPrecision, convertToDecimalNumber } from "@/utils/decimalUtils";
 import { Prisma, Revenues } from "@prisma/client";
 
 export class PrismaRevenuesRepository implements RevenuesRepository {
   async getSumOfMonthRevenues(companyId: number, date: string): Promise<{ totalAmountSum: string, date: string, revenues: Revenues[] }> {
-    const [year, monthIndex, ] = date.split('-').map(Number); // eg: 2025-01-01
-    const startDate = new Date(year, monthIndex - 1, 1);
-    const endDate = new Date(year, monthIndex, 0);
+    const { startDate, endDate } = extractYearMonthFromStringDate(date);
 
     const result = await prisma.revenues.findMany({
         where: {
@@ -16,6 +15,13 @@ export class PrismaRevenuesRepository implements RevenuesRepository {
                 gte: startDate,
                 lte: endDate
             }
+        },
+        include: {
+            company: true,
+            sources: true,
+            transaction: true,
+            conversion: true,
+            summary: true
         }
     });
 
@@ -36,7 +42,13 @@ export class PrismaRevenuesRepository implements RevenuesRepository {
   }
 
   async delete(id: string): Promise<Revenues | Error> {
-    const result = await prisma.revenues.delete({ where: { id } })
+    const result = await prisma.revenues.delete({ where: { id }, include: {
+      company: true,
+      sources: true,
+      transaction: true,
+      conversion: true,
+      summary: true
+    } })
     if (!result) {
       return new Error("Revenue not found")
     }
@@ -54,21 +66,35 @@ export class PrismaRevenuesRepository implements RevenuesRepository {
   }
 
   async createOrFind(data: Prisma.RevenuesCreateInput) {
-    return await prisma.revenues.create({ data })
+    return await prisma.revenues.create({
+      data,
+      include: {
+        company: true,
+        sources: true,
+        transaction: true,
+        conversion: true,
+        summary: true
+      }
+    })
   }
 
   async getSumOfRevenues(companyId: number, months: number) {
-    const date = new Date();
-    const startDate = new Date(date.getFullYear(), date.getMonth() - months + 1, 1);
-    const endDate = new Date(date.getFullYear(), date.getMonth(), 0);
+    const { startMonthsDate, endMonthsDate } = getMonthFromMonthsAgo(months);
 
     const result = await prisma.revenues.findMany({
         where: {
             company_id: companyId,
             received_date: {
-                gte: startDate,
-                lte: endDate
+                gte: startMonthsDate,
+                lte: endMonthsDate
             }
+        },
+        include: {
+          company: true,
+          sources: true,
+          transaction: true,
+          conversion: true,
+          summary: true
         }
     });
 
@@ -88,9 +114,7 @@ export class PrismaRevenuesRepository implements RevenuesRepository {
    * so we need to sum all of them to know the total amount of revenue for the month.
    */
   async getMonthTotalRevenue(companyId: number, month: string) {
-    const [year, monthIndex, ] = month.split('-').map(Number); // eg: 2025-01-01
-    const startDate = new Date(year, monthIndex - 1, 1);
-    const endDate = new Date(year, monthIndex, 0);
+    const { startDate, endDate } = extractYearMonthFromStringDate(month);
 
     const result = await prisma.revenues.findMany({
         where: {
@@ -99,6 +123,13 @@ export class PrismaRevenuesRepository implements RevenuesRepository {
                 gte: startDate,
                 lte: endDate
             }
+        },
+        include: {
+          company: true,
+          sources: true,
+          transaction: true,
+          conversion: true,
+          summary: true
         }
     });
 
@@ -112,15 +143,21 @@ export class PrismaRevenuesRepository implements RevenuesRepository {
 
   async has12MonthsRevenues(companyId: number) {
     const currentDate = new Date();
-    const startDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 11, 1);
-
+    const { endMonthDate } = extractYearMonthFromDate(currentDate);
     const revenues = await prisma.revenues.findMany({
       where: {
         company_id: companyId,
         received_date: {
-          gte: startDate,
+          gte: endMonthDate,
           lte: currentDate
         }
+      },
+      include: {
+        company: true,
+        sources: true,
+        transaction: true,
+        conversion: true,
+        summary: true
       }
     });
 
@@ -133,4 +170,24 @@ export class PrismaRevenuesRepository implements RevenuesRepository {
 
     return monthsWithRevenues.size === 12;
   }
+
+  async getRevenuesByDate(companyId: number, date: string): Promise<Revenues[]> {
+    const { startDate, endDate } = extractYearMonthFromStringDate(date);
+
+    return await prisma.revenues.findMany({
+      where: {
+        company_id: companyId,
+        received_date: { gte: startDate, lte: endDate }
+      },
+      include: {
+        company: true,
+        sources: true,
+        transaction: true,
+        conversion: true,
+        summary: true
+    }
+   });
+
+  }
+
 }

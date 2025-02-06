@@ -55,14 +55,14 @@ export async function createRevenue(request: FastifyRequest, reply: FastifyReply
 export async function calculateTaxes(request: FastifyRequest, reply: FastifyReply) {
   const calculateTaxesBodySchema = z.object({
     rba12: z.number(),
-    revenue: z.number(),
+    last12MonthRemuneration: z.number(),
     isAbroad: z.boolean(),
   })
 
-  const { rba12, revenue, isAbroad } = calculateTaxesBodySchema.parse(request.body)
+  const { rba12, last12MonthRemuneration, isAbroad } = calculateTaxesBodySchema.parse(request.body)
 
   const anexo3Service = makeAnexo3Service(Anexo3Year.Y2025);
-  const tax = await anexo3Service.calculateTax({ revenue, rba12, isAbroad });
+  const tax = await anexo3Service.calculateTax({ last12MonthRemuneration, rba12, isAbroad });
 
   return reply.status(200).send({ ...tax });
 }
@@ -79,4 +79,18 @@ export async function calculateIRPF(request: FastifyRequest, reply: FastifyReply
   const tax = await irpfService.calculateTax(grossSalary, dependentsCount);
 
   return reply.status(200).send({ ...tax });
+}
+
+export async function getRevenuesByDate(request: FastifyRequest, reply: FastifyReply) {
+  const getRevenuesByDateBodySchema = z.object({
+    companyId: z.number(),
+    date: z.string(),
+  })
+
+  const { companyId, date } = getRevenuesByDateBodySchema.parse(request.body)
+
+  const revenuesService = makeRevenuesService()
+  const revenues = await revenuesService.getRevenuesByDate({ companyId, date })
+
+  return reply.status(200).send(revenues)
 }

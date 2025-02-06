@@ -2,7 +2,7 @@ import { RevenuesRepository } from "@/repositories/revenues-respository";
 import { makeConversionsService } from "@/services/factories/make-conversions-service";
 import { anyToUtc } from "@/utils/dateUtils";
 import { addScaled, convertNumberToDecimalPrecision, convertToDecimalNumber, convertToDecimalWithNoPrecisionAdjust, divideScaled, multiplyScaled, percentageToDecimalPrecision, subtractScaled } from "@/utils/decimalUtils";
-import { Conversions, Currencies, Fees, FeeTypes, Prisma, TransactionAgents, Transactions, TransactionTypes } from "@prisma/client";
+import { Conversions, Currencies, Fees, FeeTypes, Prisma, Revenues, TransactionAgents, Transactions, TransactionTypes } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
 import { NotCreatedError, NotFoundError } from "./errors/common-errors";
 import { makeFeesService } from "./factories/make-fees-service";
@@ -96,6 +96,8 @@ export class RevenuesService {
                     summaryDate: data.receivedDate,
                 })
                 summary.wasCreated = true;
+                return summary;
+
             }
 
             // Check/create conversion and fees for currency conversion (if some)
@@ -344,5 +346,8 @@ export class RevenuesService {
     async getMonthRevenueSum(companyId: number, date: string): Promise<string> {
         const { totalAmountSum } = await this.revenuesRepository.getSumOfMonthRevenues(companyId, date);
         return totalAmountSum;
+    }
+    async getRevenuesByDate({ companyId, date }: { companyId: number, date: string}): Promise<Revenues[]> {
+        return await this.revenuesRepository.getRevenuesByDate(companyId, date);
     }
 }

@@ -43,6 +43,13 @@ export class PrismaRemunerationsRepository implements RemunerationsRepository {
                     gte: startDate,
                     lte: endDate
                 }
+            },
+            include: {
+                employee: true,
+                company: true,
+                transaction: true,
+                feesRemunerations: true,
+                taxesRemunerations: true
             }
         });
 
@@ -61,6 +68,13 @@ export class PrismaRemunerationsRepository implements RemunerationsRepository {
                     gte: startDate,
                     lte: endDate
                 }
+            },
+            include: {
+                employee: true,
+                company: true,
+                transaction: true,
+                feesRemunerations: true,
+                taxesRemunerations: true
             }
         });
 
@@ -70,10 +84,22 @@ export class PrismaRemunerationsRepository implements RemunerationsRepository {
         return await prisma.remunerations.update({ where: { id }, data });
     }
     async findById(id: number): Promise<Remunerations | null> {
-        return await prisma.remunerations.findUnique({ where: { id } });
+        return await prisma.remunerations.findUnique({ where: { id }, include: {
+            employee: true,
+            company: true,
+            transaction: true,
+            feesRemunerations: true,
+            taxesRemunerations: true
+        } });
     }
     async list(page: number, pageSize: number, where?: Prisma.RemunerationsWhereInput): Promise<Remunerations[]> {
-        return await prisma.remunerations.findMany({ where, skip: (page - 1) * pageSize, take: pageSize });
+        return await prisma.remunerations.findMany({ where, skip: (page - 1) * pageSize, take: pageSize, include: {
+            employee: true,
+            company: true,
+            transaction: true,
+            feesRemunerations: true,
+            taxesRemunerations: true
+        } });
     }
     async delete(id: number): Promise<Remunerations> {
         return await prisma.remunerations.delete({ where: { id } });
@@ -90,6 +116,13 @@ export class PrismaRemunerationsRepository implements RemunerationsRepository {
                     gte: startDate,
                     lte: endDate
                 }
+            },
+            include: {
+                employee: true,
+                company: true,
+                transaction: true,
+                feesRemunerations: true,
+                taxesRemunerations: true
             }
         });
 
