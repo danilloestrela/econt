@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { extractYearMonthFromStringDate, getMonthFromMonthsAgo } from "@/utils/dateUtils";
 import { addScaled, convertNumberToDecimalPrecision, convertToDecimalNumber } from "@/utils/decimalUtils";
 import { Prisma, Remunerations } from "@prisma/client";
 import { RemunerationsRepository } from "../remunerations-repository";
@@ -9,9 +10,7 @@ export class PrismaRemunerationsRepository implements RemunerationsRepository {
     }
 
     async getMonthTotalRemunerations(companyId: number, month: string): Promise<{ totalAmountSum: string; month: string; remunerations: Remunerations[]; }> {
-        const date = new Date(month);
-        const startDate = new Date(date.getFullYear(), date.getMonth() - 1, 1);
-        const endDate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+        const { startDate, endDate } = extractYearMonthFromStringDate(month);
 
         const result = await prisma.remunerations.findMany({
             where: {
@@ -20,6 +19,13 @@ export class PrismaRemunerationsRepository implements RemunerationsRepository {
                     gte: startDate,
                     lte: endDate
                 }
+            },
+            include: {
+                employee: true,
+                company: true,
+                transaction: true,
+                feesRemunerations: true,
+                taxesRemunerations: true
             }
         });
 
@@ -32,9 +38,7 @@ export class PrismaRemunerationsRepository implements RemunerationsRepository {
         }
     }
     async getRemunerationByEmployeeId(employeeId: number, date: string): Promise<Remunerations | null> {
-        const monthDate = new Date(date);
-        const startDate = new Date(monthDate.getFullYear(), monthDate.getMonth() - 1, 1);
-        const endDate = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0);
+        const { startDate, endDate } = extractYearMonthFromStringDate(date);
 
         const result = await prisma.remunerations.findFirst({
             where: {
@@ -57,9 +61,7 @@ export class PrismaRemunerationsRepository implements RemunerationsRepository {
     }
 
     async getRemunerationByEmployeeIdAndDate(employeeId: number, date: string): Promise<Remunerations | null> {
-        const monthDate = new Date(date);
-        const startDate = new Date(monthDate.getFullYear(), monthDate.getMonth() - 1, 1);
-        const endDate = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0);
+        const { startDate, endDate } = extractYearMonthFromStringDate(date);
 
         const result = await prisma.remunerations.findFirst({
             where: {
@@ -105,16 +107,14 @@ export class PrismaRemunerationsRepository implements RemunerationsRepository {
         return await prisma.remunerations.delete({ where: { id } });
     }
     async getSumOfRemunerations(companyId: number, months: number): Promise<{amountPaidSum: string, months: number, remunerations: Remunerations[]}> {
-        const date = new Date();
-        const startDate = new Date(date.getFullYear(), date.getMonth() - months + 1, 1);
-        const endDate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+        const { startMonthsDate, endMonthsDate } = getMonthFromMonthsAgo(months);
 
         const result = await prisma.remunerations.findMany({
             where: {
                 company_id: companyId,
                 created_at: {
-                    gte: startDate,
-                    lte: endDate
+                    gte: startMonthsDate,
+                    lte: endMonthsDate
                 }
             },
             include: {
@@ -134,4 +134,26 @@ export class PrismaRemunerationsRepository implements RemunerationsRepository {
         }
     }
 
+    async getRemunerationsByDate(companyId: number, date: string): Promise<Remunerations[]> {
+        const { startDate, endDate } = extractYearMonthFromStringDate(date);
+
+        const result = await prisma.remunerations.findMany({
+            where: {
+                company_id: companyId,
+                created_at: {
+                    gte: startDate,
+                    lte: endDate
+                }
+            },
+            include: {
+                employee: true,
+                company: true,
+                transaction: true,
+                feesRemunerations: true,
+                taxesRemunerations: true
+            }
+        });
+
+        return result;
+    }
 }

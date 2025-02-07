@@ -347,7 +347,7 @@ export class RevenuesService {
         const { totalAmountSum } = await this.revenuesRepository.getSumOfMonthRevenues(companyId, date);
         return totalAmountSum;
     }
-    async getRevenuesByDate({ companyId, date }: { companyId: number, date: string}): Promise<Revenues[]> {
+    async getRevenuesByDate({ companyId, date }: { companyId: number, date: string }): Promise<Revenues[]> {
         return await this.revenuesRepository.getRevenuesByDate(companyId, date);
     }
 }

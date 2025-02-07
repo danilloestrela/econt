@@ -10,4 +10,5 @@ export interface RemunerationsRepository {
     getMonthTotalRemunerations(companyId: number, month: string): Promise<{totalAmountSum: string, month: string, remunerations: Remunerations[]}>;
     getRemunerationByEmployeeId(employeeId: number, date: string): Promise<Remunerations | null>;
     getRemunerationByEmployeeIdAndDate(employeeId: number, date: string): Promise<Remunerations | null>;
+    getRemunerationsByDate(companyId: number, date: string): Promise<Remunerations[]>;
 }

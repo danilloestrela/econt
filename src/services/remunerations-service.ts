@@ -133,7 +133,12 @@ export class RemunerationsService {
                 name: "IRPF",
                 amount: convertToDecimalNumber(irpfTax.irpfTax).toString(),
                 description: "Imposto de Renda Pessoa Física",
-                currency: Currencies.brl
+                currency: Currencies.brl,
+                company: {
+                    connect: {
+                        id: companyId
+                    }
+                }
             })
             irpfTaxCreated.wasCreated = true;
 
@@ -247,5 +252,9 @@ export class RemunerationsService {
 
     async getRemunerationByEmployeeIdAndDate(employeeId: number, date: string) {
         return this.remunerationsRepository.getRemunerationByEmployeeIdAndDate(employeeId, date);
+    }
+
+    async getRemunerationsByDate({ companyId, date }: {companyId: number, date: string}) {
+        return this.remunerationsRepository.getRemunerationsByDate(companyId, date);
     }
 }
