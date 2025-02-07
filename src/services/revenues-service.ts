@@ -71,11 +71,11 @@ export class RevenuesService {
 
             // Check if source exists
             source = await sourcesService.hasSource(data.sourceId)
-            if (!source) throw new NotFoundError({what: 'Source'})
+            if (!source) throw new NotFoundError({ what: 'Source' })
 
             // Check if platform exists
             platform = await platformsService.hasPlatform(data.platformId)
-            if (!platform) throw new NotFoundError({what: 'Platform'})
+            if (!platform) throw new NotFoundError({ what: 'Platform' })
 
             // Check if summary exists
             summary = await summariesService.hasSummary({
@@ -96,8 +96,6 @@ export class RevenuesService {
                     summaryDate: data.receivedDate,
                 })
                 summary.wasCreated = true;
-                return summary;
-
             }
 
             // Check/create conversion and fees for currency conversion (if some)
@@ -310,12 +308,17 @@ export class RevenuesService {
         transaction = await transactionsService.create(transactionData)
         transaction.wasCreated = true;
         // Create Fee referent to conversion value
-        const conversionFeeData = {
+        const conversionFeeData: Prisma.FeesCreateInput = {
             amount: conversionFeeAmount.toString(),
             amount_percentage: conversionFeePercentage.toString(),
             description: `Conversion fee from ${data.fromCurrency} to ${data.toCurrency}`,
             fee_type: FeeTypes.convertion_from_amount_fee,
             currency: data.toCurrency,
+            company: {
+                connect: {
+                    id: data.companyId,
+                }
+            },
             feesConversions: {
                 create: {
                     conversions: {

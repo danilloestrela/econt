@@ -29,9 +29,9 @@ export class SummariesService {
         // Today we only have one employee per company
         // In the future we might have to create a remuneration for each employee
         // ALso atribute a "automatic" remuneration for each
-        const employeeService = makeEmployeesService();
-        const employee = await employeeService.findByCompanyId(data.companyId);
-        if (!employee) throw new NotFoundError({what: 'Employee'})
+        const employeeService = makeEmployeesService()
+        const employee = await employeeService.findByCompanyId(data.companyId)
+        if (!employee) throw new NotFoundError({ what: 'Employee' })
 
         const remuneration = await makeRemunerationsService().newEmptyRemuneration({
             companyId: data.companyId,

@@ -38,10 +38,13 @@ export class PrismaEmployeesRepository implements EmployeesRepository {
         }})
     }
     async getEmployeeByCompanyId(companyId: number): Promise<Employees | null> {
-        const employee = await prisma.employees.findFirst({where: {company_id: companyId}, include: {
-            company: true,
-            Remunerations: true
-        }})
+        const employee = await prisma.employees.findFirst({
+            where: { company_id: companyId },
+            include: {
+                company: true,
+                Remunerations: true
+            }
+        })
         return employee;
     }
 }
